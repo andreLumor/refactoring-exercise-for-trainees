@@ -1,10 +1,10 @@
 class PurchasesController < ApplicationController
   def create
-    response = PurchaseService.call(purchase_params)
-    if response[:success]
-      return render json: { status: :success, order: { id: response[:order].id } }, status: :ok
+    purchase = PurchaseService.call(purchase_params)
+    if purchase[:success]
+      render json: { status: :success, order: { id: purchase[:order].id } }, status: :ok
     else
-      return render json: {errors: response[:errors]}, status: :unprocessable_entity
+      render json: {errors: purchase[:errors]}, status: :unprocessable_entity
     end
   end
 

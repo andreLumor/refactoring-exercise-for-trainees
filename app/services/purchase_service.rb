@@ -9,8 +9,8 @@ class PurchaseService
     user = cart.user
     return {success: false, errors: make_error(user)} unless user.valid?
     order = OrderCreator.call(cart, user, address_params(purchase_params))
-    return {success: false, errors: make_error(order)} unless order.valid?
-    return {success: true, order: order}
+    return {success: false, errors: make_error(order[:content])} unless order[:success]
+    return {success: true, order: order[:content]}
   end
 
   private

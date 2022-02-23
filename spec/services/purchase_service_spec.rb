@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe PurchaseService, type: :model do
-  let(:address) {{address_1: "", address_2: "", city: "", state: "", country: "", zip: ""}}
+  let(:address) { build(:address) }
   let(:valid_user) { create(:user) }
   let(:cart) { create(:cart, user: valid_user) }
   subject {{gateway: "paypal", cart_id: cart.id, address: address}}

@@ -2,8 +2,17 @@ class OrderCreator
   def self.call(cart, user, address_params)
     new.call(cart, user, address_params)
   end
+
   def call(cart, user, address_params)
-    order = Order.new(
+    order = initialize_order(user, address_params)
+    add_items(order, cart)
+    return {success: false, content: order} unless order.save
+    {success: true, content: order} 
+  end
+
+  private
+  def initialize_order(user, address_params)
+    Order.new(
       user: user,
       first_name: user.first_name,
       last_name: user.last_name,
@@ -14,10 +23,12 @@ class OrderCreator
       country: address_params[:country],
       zip: address_params[:zip],
     )
+  end
 
+  def add_items(order, cart)
     cart.items.each do |item|
       item.quantity.times do
-        order.items << OrderLineItem.new( #mais factory?
+        order.items << OrderLineItem.new(
           order: order,
           sale: item.sale,
           unit_price_cents: item.sale.unit_price_cents,
@@ -26,10 +37,8 @@ class OrderCreator
         )
       end
     end
-    order.save
-    order
   end
-  private
+
   def shipping_costs
     100
   end
