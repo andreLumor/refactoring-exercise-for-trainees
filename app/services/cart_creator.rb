@@ -1,5 +1,8 @@
 class CartCreator
-  def self.call(purchase_params)#diminuir exposição desnecessária
+  def self.call(purchase_params)
+    new.call(purchase_params)
+  end
+  def call(purchase_params)#diminuir exposição desnecessária
     cart = Cart.find_by(id: purchase_params[:cart_id])
     return false unless cart
     if cart.user.nil?

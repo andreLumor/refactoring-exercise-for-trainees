@@ -1,5 +1,8 @@
 class OrderCreator
   def self.call(cart, user, address_params)
+    new.call(cart, user, address_params)
+  end
+  def call(cart, user, address_params)
     order = Order.new(
       user: user,
       first_name: user.first_name,
@@ -23,10 +26,11 @@ class OrderCreator
         )
       end
     end
-    return order
+    order.save
+    order
   end
   private
-  def self.shipping_costs
+  def shipping_costs
     100
   end
 end
