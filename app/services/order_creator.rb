@@ -4,8 +4,8 @@ class OrderCreator
   end
 
   def call(cart, user, address_params)
-    order = initialize_order(user, address_params)
-    add_items(order, cart)
+    order = initialize_order(user, address_params).decorate
+    order.add_items(cart)
     return {success: false, content: order} unless order.save
     {success: true, content: order} 
   end
@@ -23,23 +23,5 @@ class OrderCreator
       country: address_params[:country],
       zip: address_params[:zip],
     )
-  end
-
-  def add_items(order, cart)
-    cart.items.each do |item|
-      item.quantity.times do
-        order.items << OrderLineItem.new(
-          order: order,
-          sale: item.sale,
-          unit_price_cents: item.sale.unit_price_cents,
-          shipping_costs_cents: shipping_costs(),
-          paid_price_cents: item.sale.unit_price_cents + shipping_costs()
-        )
-      end
-    end
-  end
-
-  def shipping_costs
-    100
   end
 end
