@@ -4,29 +4,20 @@ class PurchaseService
   end
 
   def call(purchase_params)
-    return {success: false, errors: gateway_error} unless gateway_valid?(purchase_params)
-    return {success: false, errors: cart_error} unless cart = CartCreator.call(purchase_params.slice(:cart_id, :user))
-    user = cart.user
-    return {success: false, errors: make_error(user)} unless user.valid?
-    order = OrderCreator.call(cart, user, address_params(purchase_params))
-    return {success: false, errors: make_error(order[:content])} unless order[:success]
-    return {success: true, order: order[:content]}
+    return { success: false, errors: gateway_error } unless gateway_valid?(purchase_params)
+    cart = CartCreator.call(purchase_params.slice(:cart_id, :user))
+    return { success: false, errors: cart[:errors] } unless cart[:success]
+    order = OrderCreator.call(cart[:content], address_params(purchase_params))
+    return { success: false, errors: order[:errors] } unless order[:success]
+    return { success: true, order: order[:content] }
   end
 
   private
-  def make_error(instance)
-    instance.errors.map(&:full_message).map { |message| { message: message } }
-  end
-
-  def cart_error
-    [{ message: 'Cart not found!' }]
-  end
-
   def gateway_error
     [{ message: 'Gateway not supported!' }]
   end
 
-  SUPPORTED_GATEWAYS = ['stripe', 'paypal'] #usar strategy
+  SUPPORTED_GATEWAYS = ['stripe', 'paypal']
   def gateway_valid?(purchase_params)
     SUPPORTED_GATEWAYS.include? purchase_params[:gateway]
   end

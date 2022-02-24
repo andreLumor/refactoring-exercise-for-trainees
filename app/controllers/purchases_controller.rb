@@ -4,7 +4,7 @@ class PurchasesController < ApplicationController
     if purchase[:success]
       render json: { status: :success, order: { id: purchase[:order].id } }, status: :ok
     else
-      render json: {errors: purchase[:errors]}, status: :unprocessable_entity
+      render json: { errors: purchase[:errors] }, status: :unprocessable_entity
     end
   end
 

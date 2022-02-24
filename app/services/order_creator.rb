@@ -1,13 +1,13 @@
 class OrderCreator
-  def self.call(cart, user, address_params)
-    new.call(cart, user, address_params)
+  def self.call(cart, address_params)
+    new.call(cart, address_params)
   end
 
-  def call(cart, user, address_params)
-    order = initialize_order(user, address_params).decorate
+  def call(cart, address_params)
+    order = initialize_order(cart.user, address_params).decorate
     order.add_items(cart)
-    return {success: false, content: order} unless order.save
-    {success: true, content: order} 
+    return {success: false, errors: order_errors(order)} unless order.save
+    { success: true, content: order } 
   end
 
   private
@@ -23,5 +23,9 @@ class OrderCreator
       country: address_params[:country],
       zip: address_params[:zip],
     )
+  end
+
+  def order_errors(order)
+    order.errors.map(&:full_message).map { |message| { message: message } }
   end
 end
